@@ -8,3 +8,53 @@
 export interface HealthStatus {
   status: string;
 }
+
+export interface UserProfile {
+  subject: string;
+  interests: string;
+  skills: string;
+  goals: string;
+  timeAvailability: string;
+  experienceLevel: string;
+}
+
+export interface SkillResource {
+  title: string;
+  type: string;
+}
+
+export interface Skill {
+  name: string;
+  emoji: string;
+  why_for_you: string;
+  difficulty: string;
+  time_to_learn: string;
+  resources: SkillResource[];
+}
+
+export interface Project {
+  title: string;
+  description: string;
+  why_for_you: string;
+  skills_built: string[];
+  timeline: string;
+  difficulty: string;
+}
+
+export interface RoadmapPhase {
+  phase: string;
+  duration: string;
+  focus: string;
+  milestones: string[];
+}
+
+export interface RecommendationResult {
+  skills: Skill[];
+  projects: Project[];
+  roadmap: RoadmapPhase[];
+  summary: string;
+}
+
+export interface ErrorResponse {
+  error: string;
+}

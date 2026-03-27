@@ -1,6 +1,5 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
   description: API specification
@@ -10,6 +9,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: recommend
+    description: AI recommendation operations
 paths:
   /healthz:
     get:
@@ -24,6 +25,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /recommend:
+    post:
+      operationId: getRecommendations
+      tags: [recommend]
+      summary: Get AI-powered skill recommendations
+      description: Analyzes user profile and returns personalized skill recommendations, projects, and roadmap
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfile"
+      responses:
+        "200":
+          description: Personalized recommendations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecommendationResult"
+        "500":
+          description: AI processing failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +59,130 @@ components:
           type: string
       required:
         - status
-
+    UserProfile:
+      type: object
+      properties:
+        subject:
+          type: string
+        interests:
+          type: string
+        skills:
+          type: string
+        goals:
+          type: string
+        timeAvailability:
+          type: string
+        experienceLevel:
+          type: string
+      required:
+        - subject
+        - interests
+        - skills
+        - goals
+        - timeAvailability
+        - experienceLevel
+    SkillResource:
+      type: object
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+      required:
+        - title
+        - type
+    Skill:
+      type: object
+      properties:
+        name:
+          type: string
+        emoji:
+          type: string
+        why_for_you:
+          type: string
+        difficulty:
+          type: string
+        time_to_learn:
+          type: string
+        resources:
+          type: array
+          items:
+            $ref: "#/components/schemas/SkillResource"
+      required:
+        - name
+        - emoji
+        - why_for_you
+        - difficulty
+        - time_to_learn
+        - resources
+    Project:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        why_for_you:
+          type: string
+        skills_built:
+          type: array
+          items:
+            type: string
+        timeline:
+          type: string
+        difficulty:
+          type: string
+      required:
+        - title
+        - description
+        - why_for_you
+        - skills_built
+        - timeline
+        - difficulty
+    RoadmapPhase:
+      type: object
+      properties:
+        phase:
+          type: string
+        duration:
+          type: string
+        focus:
+          type: string
+        milestones:
+          type: array
+          items:
+            type: string
+      required:
+        - phase
+        - duration
+        - focus
+        - milestones
+    RecommendationResult:
+      type: object
+      properties:
+        skills:
+          type: array
+          items:
+            $ref: "#/components/schemas/Skill"
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+        roadmap:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoadmapPhase"
+        summary:
+          type: string
+      required:
+        - skills
+        - projects
+        - roadmap
+        - summary
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

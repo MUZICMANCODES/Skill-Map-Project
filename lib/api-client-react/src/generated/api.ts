@@ -5,18 +5,26 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { HealthStatus } from "./api.schemas";
+import type {
+  ErrorResponse,
+  HealthStatus,
+  RecommendationResult,
+  UserProfile,
+} from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
-import type { ErrorType } from "../custom-fetch";
+import type { ErrorType, BodyType } from "../custom-fetch";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -99,3 +107,90 @@ export function useHealthCheck<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * Analyzes user profile and returns personalized skill recommendations, projects, and roadmap
+ * @summary Get AI-powered skill recommendations
+ */
+export const getGetRecommendationsUrl = () => {
+  return `/api/recommend`;
+};
+
+export const getRecommendations = async (
+  userProfile: UserProfile,
+  options?: RequestInit,
+): Promise<RecommendationResult> => {
+  return customFetch<RecommendationResult>(getGetRecommendationsUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(userProfile),
+  });
+};
+
+export const getGetRecommendationsMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getRecommendations>>,
+    TError,
+    { data: BodyType<UserProfile> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof getRecommendations>>,
+  TError,
+  { data: BodyType<UserProfile> },
+  TContext
+> => {
+  const mutationKey = ["getRecommendations"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof getRecommendations>>,
+    { data: BodyType<UserProfile> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return getRecommendations(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type GetRecommendationsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof getRecommendations>>
+>;
+export type GetRecommendationsMutationBody = BodyType<UserProfile>;
+export type GetRecommendationsMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Get AI-powered skill recommendations
+ */
+export const useGetRecommendations = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getRecommendations>>,
+    TError,
+    { data: BodyType<UserProfile> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof getRecommendations>>,
+  TError,
+  { data: BodyType<UserProfile> },
+  TContext
+> => {
+  return useMutation(getGetRecommendationsMutationOptions(options));
+};

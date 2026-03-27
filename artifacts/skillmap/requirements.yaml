@@ -1,0 +1,15 @@
+packages:
+  "framer-motion": "For premium animations, page transitions, and floating shapes"
+  "zustand": "For lightweight client state management (auth, results)"
+  "clsx": "For conditional class name joining"
+  "tailwind-merge": "For merging tailwind classes safely"
+
+images:
+  - path: "artifacts/skillmap/public/images/auth-bg.png"
+    description: "Abstract 3D glassmorphism shapes floating in a dark space with vibrant purple, deep blue, and neon pink lighting, premium tech aesthetic, dark mode"
+    aspect_ratio: "9:16"
+
+notes:
+  - Using generated hooks from @workspace/api-client-react
+  - Auth and Results are persisted using zustand + localStorage
+  - Defaulting to a forced dark mode aesthetic

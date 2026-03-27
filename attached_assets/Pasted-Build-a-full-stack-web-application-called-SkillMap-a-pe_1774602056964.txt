@@ -1,0 +1,209 @@
+Build a full-stack web application called "SkillMap" — a personalized skill & project recommendation system.
+
+## IMPORTANT RULES
+
+* DO NOT ask the user for any API key in the UI
+* API key must ONLY be used in backend via process.env.GEMINI_API_KEY
+* No API input fields anywhere in frontend
+
+---
+
+## TECH STACK
+
+* Frontend: React + Tailwind CSS
+* Backend: Node.js + Express
+* AI: Google Gemini API (gemini-1.5-flash)
+* No database (use localStorage for auth)
+
+---
+
+## AUTH SYSTEM (UPGRADED 🔥)
+
+### Layout (VERY IMPORTANT)
+
+Create a **split-screen login/register page**:
+
+#### LEFT SIDE (Branding Panel)
+
+* App name: **SkillMap**
+* Tagline: "Map your future with AI-powered skills & projects"
+* Short description:
+  "SkillMap analyzes your interests, goals, and current skills to generate a personalized roadmap, recommended skills, and real-world projects tailored just for you."
+* Add 3 bullet features:
+
+  * 🎯 Personalized skill recommendations
+  * 💡 Real-world project ideas
+  * 🗺️ Step-by-step roadmap
+* Add gradient background (purple → blue)
+* Add subtle animation (floating shapes or glow)
+
+#### RIGHT SIDE (Auth Form)
+
+* Toggle between Login and Register
+
+### Register Form
+
+* Name
+* Email
+* Password
+* Store in localStorage
+
+### Login Form
+
+* Email
+* Password
+* Validate from localStorage
+
+### After Login
+
+* Redirect to main app
+* Show navbar:
+  "Welcome, {User Name}"
+* Add logout button
+
+---
+
+## CREDIT DISPLAY
+
+* Add footer or navbar:
+  "Built by MAHROOS KARIPPATHODIKA"
+* Style it with gradient/glow effect
+
+---
+
+## USER FLOW
+
+### Step 0 — Auth Gate
+
+* Not logged in → show split login page
+* Logged in → go to onboarding
+
+---
+
+### Step 1 — Onboarding Form (multi-step)
+
+Collect:
+
+* Subject/Course
+* Interests
+* Skills
+* Goals
+* Time availability
+* Experience level
+
+Add:
+
+* Progress bar
+* Smooth transitions
+
+---
+
+### Step 2 — AI Loading Screen
+
+* Fullscreen animation
+* Messages:
+
+  * "Analyzing your profile..."
+  * "Mapping skill pathways..."
+  * "Crafting your roadmap..."
+
+---
+
+### Step 3 — Results Dashboard
+
+#### Skills
+
+* 3–6 cards
+* Emoji + name
+* Personalized reason
+* Difficulty + time
+* Resources
+
+#### Projects
+
+* 3–4 cards
+* Description
+* Why for user
+* Skills built
+* Timeline
+
+#### Roadmap
+
+* Phase 1 → Phase 2 → Phase 3
+* Milestones
+
+---
+
+## BACKEND (DO NOT CHANGE)
+
+Use this:
+
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+app.post("/api/recommend", async (req, res) => {
+try {
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+````
+const prompt = `You are a skill recommendation expert. Based on this user profile, 
+return ONLY a valid JSON object (no markdown, no backticks) with this structure:
+{
+  "skills": [{ "name": "", "emoji": "", "why_for_you": "", "difficulty": "", "time_to_learn": "", "resources": [{"title": "", "type": ""}] }],
+  "projects": [{ "title": "", "description": "", "why_for_you": "", "skills_built": [], "timeline": "", "difficulty": "" }],
+  "roadmap": [{ "phase": "", "duration": "", "focus": "", "milestones": [] }],
+  "summary": ""
+}
+
+User Profile: ${JSON.stringify(req.body)}
+
+Make results deeply personalized.`;
+
+const result = await model.generateContent(prompt);
+const text = result.response.text();
+
+const cleaned = text.replace(/```json|```/g, "").trim();
+const json = JSON.parse(cleaned);
+
+res.json(json);
+````
+
+} catch (err) {
+res.status(500).json({ error: "AI failed" });
+}
+});
+
+---
+
+## UI/UX REQUIREMENTS
+
+* Dark mode
+* Purple/blue gradient theme
+* Glassmorphism cards
+* Smooth animations
+* Mobile responsive
+* Split login page like Instagram
+* Hover effects
+* "Start Over" button
+
+---
+
+## EXTRA FEATURES
+
+* Save results in localStorage
+* "Regenerate" button
+* Show previous results on reload
+
+---
+
+## FILE STRUCTURE
+
+/client
+/server
+.env
+
+---
+
+## FINAL GOAL
+
+The app should feel like a **modern SaaS product**, not a student project.

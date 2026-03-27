@@ -14,3 +14,53 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * Analyzes user profile and returns personalized skill recommendations, projects, and roadmap
+ * @summary Get AI-powered skill recommendations
+ */
+export const GetRecommendationsBody = zod.object({
+  subject: zod.string(),
+  interests: zod.string(),
+  skills: zod.string(),
+  goals: zod.string(),
+  timeAvailability: zod.string(),
+  experienceLevel: zod.string(),
+});
+
+export const GetRecommendationsResponse = zod.object({
+  skills: zod.array(
+    zod.object({
+      name: zod.string(),
+      emoji: zod.string(),
+      why_for_you: zod.string(),
+      difficulty: zod.string(),
+      time_to_learn: zod.string(),
+      resources: zod.array(
+        zod.object({
+          title: zod.string(),
+          type: zod.string(),
+        }),
+      ),
+    }),
+  ),
+  projects: zod.array(
+    zod.object({
+      title: zod.string(),
+      description: zod.string(),
+      why_for_you: zod.string(),
+      skills_built: zod.array(zod.string()),
+      timeline: zod.string(),
+      difficulty: zod.string(),
+    }),
+  ),
+  roadmap: zod.array(
+    zod.object({
+      phase: zod.string(),
+      duration: zod.string(),
+      focus: zod.string(),
+      milestones: zod.array(zod.string()),
+    }),
+  ),
+  summary: zod.string(),
+});
